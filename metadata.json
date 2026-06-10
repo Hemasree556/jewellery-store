@@ -1,0 +1,6 @@
+{
+  "name": "HAARA Premium Jewelry",
+  "description": "Bespoke & Heritage Luxury Gold, Diamond, and Traditional Jewelry Collections website featuring custom 1-on-1 consultations and real-time AI curated recommendations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
