@@ -56,8 +56,8 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "col-7",
-    title: "Imperial Emerald Collection",
-    description: "Enchanting Colombian and Zambian green emeralds set in high-karat gold with brilliant diamond halos.",
+    title: "pink stone Collection",
+    description: "enchanting the elegance of pink stone with hold of gold.",
     imageUrl: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=800&auto=format&fit=crop",
     tag: "Emerald"
   },
