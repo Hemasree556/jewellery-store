@@ -392,8 +392,8 @@ export default function App() {
             transition={{ duration: 1.2, delay: 0.2 }}
             className="text-5xl sm:text-7xl md:text-8xl font-serif tracking-[0.05em] leading-[1.1] text-[#FAF9F6] mb-8 font-light"
           >
-            Crafting <br className="sm:hidden" />
-            <span className="italic font-light">Timeless</span> <br />
+            Where <br className="sm:hidden" />
+            <span className="italic font-light">designs speaks</span> <br />
             <span className="text-[#D4AF37] font-normal">Elegance</span>
           </motion.h1>
 
