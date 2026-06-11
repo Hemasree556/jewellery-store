@@ -53,6 +53,27 @@ export const COLLECTIONS: Collection[] = [
     description: "Exceptional handcrafted antique jewelry celebrating decades of deep culture, intricate temple crafts, and legacy.",
     imageUrl: "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?q=80&w=800&auto=format&fit=crop",
     tag: "Heritage"
+  },
+  {
+    id: "col-7",
+    title: "Imperial Emerald Collection",
+    description: "Enchanting Colombian and Zambian green emeralds set in high-karat gold with brilliant diamond halos.",
+    imageUrl: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=800&auto=format&fit=crop",
+    tag: "Emerald"
+  },
+  {
+    id: "col-8",
+    title: "Royal Sapphire Collection",
+    description: "Breathtaking selections of deep Ceylon blue sapphires set in custom platinum, representing loyalty, wisdom, and royalty.",
+    imageUrl: "https://images.unsplash.com/photo-1605100803063-e200f1930014?q=80&w=800&auto=format&fit=crop",
+    tag: "Sapphire"
+  },
+  {
+    id: "col-9",
+    title: "Blush Rose & Ruby Collection",
+    description: "Flattering pink morganite, vivid red rubies, and delicate pink sapphires enveloped in 18K warm rose gold frames.",
+    imageUrl: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=800&auto=format&fit=crop",
+    tag: "Ruby"
   }
 ];
 
@@ -73,14 +94,14 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: "p-2",
-    name: "Isadora Royal Emerald Necklace",
-    description: "A hand-strung statement necklace starring three pear-shaped Colombian emeralds centered amongst brilliant-cut diamond wreaths.",
+    name: "Isadora Royal Emerald Pendant Necklace",
+    description: "A breathtaking statement necklace starring a pear-shaped Colombian emerald centerpiece suspended gracefully from a ribbon-chain of white gold.",
     price: 12400,
     category: "Necklaces",
-    subCategory: "Heritage",
-    imageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800&auto=format&fit=crop",
+    subCategory: "Emerald",
+    imageUrl: "https://images.unsplash.com/photo-1635767798638-3e25273a8236?q=80&w=800&auto=format&fit=crop",
     metal: "18K Yellow Gold",
-    gems: "Colombian Emeralds & Diamonds",
+    gems: "Colombian Emerald & Diamonds",
     rating: 5.0,
     reviewsCount: 32,
     isPopular: true
@@ -115,15 +136,15 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: "p-5",
-    name: "Amara Rose Gold Halo Ring",
-    description: "A brilliant cushion-cut pink sapphire haloed by brilliant pink diamonds, resting on a polished dual-band of 18K rose gold.",
-    price: 2850,
+    name: "Amara Rose Gold Emerald Ring",
+    description: "A brilliant cushion-cut Colombian green emerald haloed by brilliant micro-diamonds, resting on a polished dual-band of 18K rose gold.",
+    price: 3850,
     category: "Rings",
-    subCategory: "Contemporary",
+    subCategory: "Emerald",
     imageUrl: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=800&auto=format&fit=crop",
     metal: "18K Rose Gold",
-    gems: "Natural Pink Sapphire",
-    rating: 4.7,
+    gems: "Colombian Emerald",
+    rating: 4.8,
     reviewsCount: 19,
     isPopular: false
   },
@@ -143,7 +164,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: "p-7",
-    name: "contemporary Linear Silver Drop Studs",
+    name: "Contemporary Linear Silver Drop Studs",
     description: "Deconstructivist linear silver earrings composed of interlocking clean lines, dangling with solid structural flow. Finished with Rhodium.",
     price: 320,
     category: "Earrings",
@@ -167,6 +188,118 @@ export const PRODUCTS: Product[] = [
     gems: "None",
     rating: 4.8,
     reviewsCount: 41,
+    isPopular: false
+  },
+  {
+    id: "p-9",
+    name: "Princess Royal Sapphire Ring",
+    description: "A majestic, oval-cut, vivid blue Ceylon sapphire set on premium platinum, flanked by micro-pavé diamonds on the shoulders.",
+    price: 6800,
+    category: "Rings",
+    subCategory: "Sapphire",
+    imageUrl: "https://images.unsplash.com/photo-1605100803063-e200f1930014?q=80&w=800&auto=format&fit=crop",
+    metal: "Platinum",
+    gems: "Ceylon Blue Sapphire",
+    rating: 4.9,
+    reviewsCount: 38,
+    isPopular: true
+  },
+  {
+    id: "p-10",
+    name: "Rosaline Blush Pink Morganite Ring",
+    description: "A rare sweet-pink morganite cushion gemstone flanked by brilliant pink round-cut diamonds on an 18K rose gold braided band.",
+    price: 3100,
+    category: "Rings",
+    subCategory: "Ruby",
+    imageUrl: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=800&auto=format&fit=crop",
+    metal: "18K Rose Gold",
+    gems: "Blush Pink Morganite",
+    rating: 4.8,
+    reviewsCount: 25,
+    isPopular: false
+  },
+  {
+    id: "p-11",
+    name: "Burmese Ruby Choker Necklace",
+    description: "A glamorous statement piece featuring oval-cut Burmese red rubies aligned alternatingly with pristine pear-cut GIA diamonds.",
+    price: 15400,
+    category: "Necklaces",
+    subCategory: "Ruby",
+    imageUrl: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=800&auto=format&fit=crop",
+    metal: "18K White Gold",
+    gems: "Burmese Red Rubies & Diamonds",
+    rating: 4.9,
+    reviewsCount: 14,
+    isPopular: true
+  },
+  {
+    id: "p-12",
+    name: "Imperial Emerald Drop Earrings",
+    description: "Vibrant pear-cut Colombian emeralds suspended gracefully from diamond-encrusted platinum stems, creating the ultimate aesthetic.",
+    price: 5200,
+    category: "Earrings",
+    subCategory: "Emerald",
+    imageUrl: "https://images.unsplash.com/photo-1630019852942-f89202989a59?q=80&w=800&auto=format&fit=crop",
+    metal: "Platinum",
+    gems: "Colombian Emerald Drops",
+    rating: 4.9,
+    reviewsCount: 18,
+    isPopular: false
+  },
+  {
+    id: "p-13",
+    name: "Duchess Sapphire Chevron Necklace",
+    description: "A magnificent chevron-style necklace dripping with a gradient of Royal Blue Ceylon sapphires alternating with fine-cut diamonds.",
+    price: 13900,
+    category: "Necklaces",
+    subCategory: "Sapphire",
+    imageUrl: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?q=80&w=800&auto=format&fit=crop",
+    metal: "18K White Gold",
+    gems: "Ceylon Blue Sapphires",
+    rating: 5.0,
+    reviewsCount: 9,
+    isPopular: true
+  },
+  {
+    id: "p-14",
+    name: "Elysian Pearl & Diamond Studs",
+    description: "Flawless, perfectly spherical Japanese Akoya pearls set above single brilliant round diamonds, offering a quiet, understated statement dress code.",
+    price: 1800,
+    category: "Earrings",
+    subCategory: "Silver",
+    imageUrl: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=800&auto=format&fit=crop",
+    metal: "18K Yellow Gold",
+    gems: "Natural Akoya Pearls & Diamonds",
+    rating: 4.7,
+    reviewsCount: 31,
+    isPopular: false
+  },
+  {
+    id: "p-15",
+    name: "Empress Ruby Solitaire Bangle",
+    description: "An opulent open-end luxury bangle featuring dual teardrop Burmese rubies on each terminal, supported by marquise-cut GIA diamonds.",
+    price: 9800,
+    category: "Bangles",
+    subCategory: "Ruby",
+    imageUrl: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800&auto=format&fit=crop",
+    metal: "18K Yellow Gold",
+    gems: "Burmese Rubies & Marquise Diamonds",
+    rating: 4.9,
+    reviewsCount: 22,
+    isPopular: true
+  },
+  {
+    id: "p-16",
+    name: "Minimalist Stackable Diamond Band",
+    description: "An essential contemporary luxury piece. Extremely slender, hand-hammered stackable bands covered in conflict-free micro pavé diamonds.",
+    price: 1250,
+    category: "Rings",
+    subCategory: "Contemporary",
+    imageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800&auto=format&fit=crop",
+    metal: "18K Gold",
+    gems: "Micro-Pavé Conflict-Free Diamonds",
+    rating: 4.5,
+    reviewsCount: 16,
     isPopular: false
   }
 ];
@@ -276,7 +409,7 @@ export const BLOGS: BlogPost[] = [
     date: "Mar 10, 2026",
     readTime: "6 Min Read",
     imageUrl: "https://images.unsplash.com/photo-1610349372132-7ded6b55db52?q=80&w=800&auto=format&fit=crop",
-    author: "Devraj Haara, Founder"
+    author: "Varada Hemasree, Founder"
   }
 ];
 

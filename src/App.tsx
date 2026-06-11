@@ -280,7 +280,6 @@ export default function App() {
                 HAARA
                 <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#D4AF37] transition-all duration-300 group-hover:w-full"></span>
               </span>
-              <span className="text-[11px] uppercase font-sans tracking-[0.2em] text-neutral-500 hidden sm:inline border-l border-[#D4AF37]/30 pl-3">Atelier</span>
             </div>
 
             {/* Main Desktop Links */}
@@ -309,6 +308,7 @@ export default function App() {
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
                     if (e.target.value) {
+                      setSelectedCategory("All");
                       scrollToSection("catalog");
                     }
                   }}
@@ -429,11 +429,7 @@ export default function App() {
 
         </div>
 
-        {/* Scroll helper */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
-          <span className="text-[9px] uppercase tracking-[0.3em] text-[#D4AF37] opacity-60 mb-2">Scroll to explore</span>
-          <div className="w-[1px] h-12 bg-gradient-to-b from-[#D4AF37] to-transparent animate-pulse" />
-        </div>
+        {/* Scroll helper removed */}
       </section>
 
       {/* 3. Our Expertise Stats - Integrated Counters */}
@@ -532,7 +528,7 @@ export default function App() {
               {/* Quality Commitment Counter */}
               <blockquote className="mt-8 border-l-2 border-[#D4AF37] pl-4 italic text-sm text-neutral-400 font-sans">
                 "Fine jewelry is not merely ornamentation. It represents encapsulated memory, deep structural history, and a physical transfer of devotion across generations."
-                <cite className="block text-xs uppercase tracking-widest text-[#D4AF37] font-serif mt-2 not-italic">— Devraj Haara, Founder</cite>
+                <cite className="block text-xs uppercase tracking-widest text-[#D4AF37] font-serif mt-2 not-italic">— Varada Hemasree, Founder</cite>
               </blockquote>
 
             </div>
@@ -608,7 +604,7 @@ export default function App() {
 
             {/* Category Filters on Desktop */}
             <div className="flex flex-wrap items-center mt-6 md:mt-0 gap-2 font-sans text-[11px] uppercase tracking-wider">
-              {["All", "Rings", "Necklaces", "Earrings", "Bangles", "Bridal", "Diamond", "Gold", "Silver"].map((cat) => (
+              {["All", "Rings", "Necklaces", "Earrings", "Bangles", "Bridal", "Diamond", "Gold", "Silver", "Sapphire", "Emerald", "Ruby"].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
@@ -634,7 +630,12 @@ export default function App() {
                 placeholder="Type keywords (e.g. emerald, rose gold, solitaire)..." 
                 value={searchQuery}
                 aria-label="Filter products by text search"
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  if (e.target.value) {
+                    setSelectedCategory("All");
+                  }
+                }}
                 className={`w-full pl-10 pr-4 py-3 text-xs tracking-wide transition-all focus:outline-none rounded-none border ${isDark ? "bg-[#1A1A1A] border-[#D4AF37]/20 text-[#FAF9F6] focus:border-[#D4AF37]" : "bg-white border-[#D4AF37]/35 text-[#0F0F0F] focus:border-[#D4AF37]"}`}
               />
               <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-neutral-400" />
