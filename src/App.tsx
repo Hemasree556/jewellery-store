@@ -47,8 +47,20 @@ import {
   IMAGES 
 } from "./data";
 import { Product, RecommendationResponse } from "./types";
+import { useAuth } from "./context/AuthContext";
+import AuthModal from "./components/AuthModal";
+import { doc, setDoc, deleteDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "./firebase";
+
 
 export default function App() {
+  const { user, profile, logout } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [isPortalOpen, setIsPortalOpen] = useState<boolean>(false);
+  const [userBookings, setUserBookings] = useState<any[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState<boolean>(false);
+  const [loadingWishlist, setLoadingWishlist] = useState<boolean>(false);
+
   // Theme state
   const [isDark, setIsDark] = useState<boolean>(true);
 
@@ -112,6 +124,92 @@ export default function App() {
   // WhatsApp chat bubble state
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState<boolean>(false);
   const [whatsAppText, setWhatsAppText] = useState<string>("Hi HAARA Concierge, I’d like to enquire about bespoke bridal collections...");
+
+  // Load wishlist and bookings if user is signed in
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) {
+        // Fallback to local storage for guest wishlist
+        const localWish = localStorage.getItem("haara_wishlist");
+        if (localWish) {
+          try {
+            setWishlist(JSON.parse(localWish));
+          } catch (e) {
+            console.error("Error parsing local wishlist:", e);
+          }
+        } else {
+          setWishlist([]);
+        }
+        setUserBookings([]);
+        return;
+      }
+
+      setLoadingWishlist(true);
+      setLoadingBookings(true);
+
+      try {
+        // Fetch wishlist items from Firestore subcollection /users/{uid}/wishlist
+        const wishRef = collection(db, "users", user.uid, "wishlist");
+        const wishSnap = await getDocs(wishRef);
+        const fbWishlist: Product[] = [];
+        wishSnap.forEach((docSnap) => {
+          const data = docSnap.data();
+          // Find matching design product from PRODUCTS array to retain consistency
+          const matchedProduct = PRODUCTS.find((p) => p.id === data.productId);
+          if (matchedProduct) {
+            fbWishlist.push(matchedProduct);
+          }
+        });
+
+        // Merge existing local guest wishlist to Firebase on login if any
+        const localWish = localStorage.getItem("haara_wishlist");
+        let finalWishlist = fbWishlist;
+        if (localWish) {
+          try {
+            const guestItems: Product[] = JSON.parse(localWish);
+            for (const item of guestItems) {
+              if (!fbWishlist.some((fb) => fb.id === item.id)) {
+                // Add to Firestore
+                await setDoc(doc(db, "users", user.uid, "wishlist", item.id), {
+                  productId: item.id,
+                  name: item.name,
+                  price: item.price,
+                  imageUrl: item.imageUrl,
+                  addedAt: new Date().toISOString()
+                });
+                finalWishlist.push(item);
+              }
+            }
+            localStorage.removeItem("haara_wishlist");
+          } catch (e) {
+            console.error("Error merging guest wishlist:", e);
+          }
+        }
+
+        setWishlist(finalWishlist);
+
+        // Fetch bookings for logged-in user
+        const bookingsRef = collection(db, "bookings");
+        const q = query(bookingsRef, where("userId", "==", user.uid));
+        const bookingSnap = await getDocs(q);
+        const bookingsList: any[] = [];
+        bookingSnap.forEach((docSnap) => {
+          bookingsList.push(docSnap.data());
+        });
+        // Sort bookings locally by newest first
+        bookingsList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setUserBookings(bookingsList);
+
+      } catch (err) {
+        console.error("Error fetching user data from Firestore:", err);
+      } finally {
+        setLoadingWishlist(false);
+        setLoadingBookings(false);
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
 
   useEffect(() => {
     // Customers counter
@@ -193,18 +291,68 @@ export default function App() {
   };
 
   // Wishlist handler
-  const toggleWishlist = (product: Product) => {
-    if (wishlist.some(item => item.id === product.id)) {
-      setWishlist(wishlist.filter(item => item.id !== product.id));
+  const toggleWishlist = async (product: Product) => {
+    const isAdded = wishlist.some(item => item.id === product.id);
+    let updated: Product[];
+
+    if (isAdded) {
+      updated = wishlist.filter(item => item.id !== product.id);
     } else {
-      setWishlist([...wishlist, product]);
+      updated = [...wishlist, product];
+    }
+
+    setWishlist(updated);
+
+    if (user) {
+      try {
+        const itemDoc = doc(db, "users", user.uid, "wishlist", product.id);
+        if (isAdded) {
+          await deleteDoc(itemDoc);
+        } else {
+          await setDoc(itemDoc, {
+            productId: product.id,
+            name: product.name,
+            price: product.price,
+            imageUrl: product.imageUrl,
+            addedAt: new Date().toISOString()
+          });
+        }
+      } catch (err) {
+        console.error("Error syncing wishlist item to Firestore:", err);
+      }
+    } else {
+      localStorage.setItem("haara_wishlist", JSON.stringify(updated));
     }
   };
 
   // Appointment Submission
-  const handleBookingSubmit = (e: React.FormEvent) => {
+  const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsBookingConfirmed(true);
+
+    const bookingId = "book_" + Math.random().toString(36).substring(2, 11);
+    const newBooking = {
+      bookingId,
+      userId: user?.uid || "guest",
+      name: bookingFormData.name,
+      email: bookingFormData.email,
+      phone: bookingFormData.phone,
+      service: bookingFormData.service,
+      date: bookingFormData.date,
+      time: bookingFormData.time,
+      message: bookingFormData.message,
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      await setDoc(doc(db, "bookings", bookingId), newBooking);
+      if (user) {
+        setUserBookings(prev => [newBooking, ...prev]);
+      }
+    } catch (err) {
+      console.error("Error saving booking appointment:", err);
+    }
+
     setTimeout(() => {
       setIsBookingConfirmed(false);
       setIsBookingModalOpen(false);
@@ -221,9 +369,28 @@ export default function App() {
   };
 
   // Contact Form Submission
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsContactSubmitted(true);
+
+    const inquiryId = "inq_" + Math.random().toString(36).substring(2, 11);
+    const newInquiry = {
+      inquiryId,
+      name: contactFormData.name,
+      email: contactFormData.email,
+      phone: contactFormData.phone,
+      service: contactFormData.service,
+      message: contactFormData.message,
+      userId: user?.uid || "guest",
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      await setDoc(doc(db, "inquiries", inquiryId), newInquiry);
+    } catch (err) {
+      console.error("Error saving contact inquiry:", err);
+    }
+
     setTimeout(() => {
       setIsContactSubmitted(false);
       setContactFormData({
@@ -297,7 +464,7 @@ export default function App() {
             </div>
 
             {/* Utility actions */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3.5">
               
               {/* Search Bar in Header */}
               <div className="relative hidden lg:block">
@@ -312,7 +479,7 @@ export default function App() {
                       scrollToSection("catalog");
                     }
                   }}
-                  className={`w-40 xl:w-56 pl-8 pr-3 py-1.5 rounded-none text-xs transition-all tracking-wide focus:outline-none focus:w-64 focus:ring-1 ${isDark ? "bg-[#1A1A1A] border border-[#D4AF37]/20 text-[#FAF9F6] focus:ring-[#D4AF37]" : "bg-[#F3F2EE] border border-[#D4AF37]/30 text-[#0F0F0F] focus:ring-[#D4AF37]"}`}
+                  className={`w-32 xl:w-44 pl-8 pr-3 py-1.5 rounded-none text-xs transition-all tracking-wide focus:outline-none focus:w-52 focus:ring-1 ${isDark ? "bg-[#1A1A1A] border border-[#D4AF37]/20 text-[#FAF9F6] focus:ring-[#D4AF37]" : "bg-[#F3F2EE] border border-[#D4AF37]/30 text-[#0F0F0F] focus:ring-[#D4AF37]"}`}
                 />
                 <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
               </div>
@@ -339,6 +506,110 @@ export default function App() {
                   </span>
                 )}
               </button>
+
+              {/* Authentication Button & Dropdown */}
+              {!user ? (
+                <button 
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="p-2 rounded-none border border-[#D4AF37]/25 hover:bg-[#D4AF37]/10 text-neutral-400 hover:text-[#D4AF37] transition-all cursor-pointer flex items-center space-x-1"
+                >
+                  <User className="w-4 h-4 text-[#D4AF37]" />
+                  <span className="text-[10px] uppercase tracking-widest font-sans font-bold hidden sm:inline">Sign In</span>
+                </button>
+              ) : (
+                <div className="relative">
+                  <button 
+                    onClick={() => setIsPortalOpen(!isPortalOpen)}
+                    className="p-2 rounded-none border border-[#D4AF37]/25 hover:bg-[#D4AF37]/10 text-[#D4AF37] transition-all cursor-pointer flex items-center space-x-1.5"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <User className="w-4 h-4 text-[#D4AF37]" />
+                    <span className="text-[10px] uppercase tracking-wider font-sans font-bold hidden sm:inline max-w-[80px] truncate">
+                      {profile?.displayName?.split(" ")[0] || "Atelier"}
+                    </span>
+                    <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${isPortalOpen ? "rotate-180" : ""}`} />
+                  </button>
+
+                  <AnimatePresence>
+                    {isPortalOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className={`absolute right-0 mt-2.5 w-64 p-5 shadow-2xl border border-[#D4AF37]/35 rounded-none z-50 text-left ${
+                          isDark ? "bg-[#111111] text-[#FAF9F6]" : "bg-white text-[#0F0F0F]"
+                        }`}
+                      >
+                        <div className="border-b border-dashed border-[#D4AF37]/25 pb-3 mb-4">
+                          <span className="uppercase text-[9px] tracking-widest text-[#D4AF37] font-semibold block">
+                            Atelier Member Portal
+                          </span>
+                          <p className="text-sm font-semibold truncate mt-1">
+                            {profile?.displayName || user.displayName || "Atelier Member"}
+                          </p>
+                          <p className="text-[10px] text-neutral-400 truncate mt-0.5">
+                            {user.email}
+                          </p>
+                        </div>
+
+                        <div className="space-y-3">
+                          <span className="uppercase text-[9px] tracking-widest text-[#D4AF37] opacity-85 font-semibold block">
+                            My Consultations ({userBookings.length})
+                          </span>
+                          {userBookings.length === 0 ? (
+                            <p className="text-[10px] text-neutral-500 italic">
+                              No bespoke appointments booked.
+                            </p>
+                          ) : (
+                            <div className="max-h-24 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
+                              {userBookings.map((b, idx) => (
+                                <div
+                                  key={idx}
+                                  className={`p-2 border text-[10px] space-y-0.5 ${
+                                    isDark ? "bg-[#1A1A1A] border-[#D4AF37]/10" : "bg-[#F9F8F6] border-[#D4AF37]/20"
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between font-serif font-semibold text-[#D4AF37]">
+                                    <span className="truncate max-w-[120px]">{b.service}</span>
+                                    <span className="text-[8px] uppercase tracking-wider text-green-500">Confirmed</span>
+                                  </div>
+                                  <div className="flex justify-between text-[9px] text-neutral-500 font-mono">
+                                    <span>{b.date}</span>
+                                    <span>{b.time}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className="border-t border-neutral-800/10 pt-3 flex flex-col space-y-1">
+                            <button
+                              onClick={() => {
+                                setIsWishlistOpen(true);
+                                setIsPortalOpen(false);
+                              }}
+                              className="w-full text-left text-[10px] uppercase tracking-widest py-1.5 text-neutral-400 hover:text-[#D4AF37] transition-all font-semibold flex items-center space-x-1.5"
+                            >
+                              <Heart className="w-3.5 h-3.5 text-[#D4AF37]" />
+                              <span>Bespoke Wishlist ({wishlist.length})</span>
+                            </button>
+                            
+                            <button
+                              onClick={() => {
+                                logout();
+                                setIsPortalOpen(false);
+                              }}
+                              className="w-full text-left text-[10px] uppercase tracking-widest py-1.5 text-red-400 hover:text-red-300 transition-all font-bold border-t border-neutral-800/20 mt-2 pt-2 block"
+                            >
+                              Sign Out Atelier
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
 
               {/* Consultation Booking CTA */}
               <button 
@@ -1954,6 +2225,8 @@ export default function App() {
           </div>
         )}
       </AnimatePresence>
+
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} isDark={isDark} />
 
     </div>
   );

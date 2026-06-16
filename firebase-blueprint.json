@@ -1,0 +1,142 @@
+{
+  "entities": {
+    "user": {
+      "title": "User Profile",
+      "description": "Stores basic user profile details mapped to Firebase Auth",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "name": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["userId", "email", "name", "createdAt"]
+    },
+    "wishlistItem": {
+      "title": "Wishlist Item",
+      "description": "Represents a jewelry item saved in the user's wishlist",
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "addedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["productId", "name", "price", "imageUrl", "addedAt"]
+    },
+    "booking": {
+      "title": "Service Booking",
+      "description": "An appointment booked for a jewelry service or consultation",
+      "type": "object",
+      "properties": {
+        "bookingId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["bookingId", "userId", "name", "email", "phone", "service", "date", "time", "message", "createdAt"]
+    },
+    "inquiry": {
+      "title": "Contact Inquiry",
+      "description": "A contact message submitted via the luxury inquiries form",
+      "type": "object",
+      "properties": {
+        "inquiryId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["inquiryId", "name", "email", "phone", "service", "message", "userId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "user",
+      "description": "Stores user account basic fields mapped by UID"
+    },
+    "/users/{userId}/wishlist/{productId}": {
+      "schema": "wishlistItem",
+      "description": "Wishlist items subcollection under the corresponding user"
+    },
+    "/bookings/{bookingId}": {
+      "schema": "booking",
+      "description": "Appointment bookings placed by registered users"
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": "inquiry",
+      "description": "Contact form submissions for luxury jewel questions"
+    }
+  }
+}
