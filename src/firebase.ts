@@ -9,8 +9,8 @@ const firebaseConfig = {
   projectId: "haara-4f89b",
   storageBucket: "haara-4f89b.firebasestorage.app",
   messagingSenderId: "463709187209",
-  appId: "1:463709187209:web:3ad31b0a353a792d66ea58",
-  measurementId: "G-EC1905KWD4"
+  appId: "1:463709187209:web:4afe9d969bceb6b966ea58",
+  measurementId: "G-Z0XMXPPQZY"
 };
 
 // Initialize Firebase
