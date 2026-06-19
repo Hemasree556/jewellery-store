@@ -52,6 +52,11 @@ import AuthModal from "./components/AuthModal";
 import { doc, setDoc, deleteDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "./firebase";
 
+// Global currency formatter to convert default prices (mocked in USD) to Indian Rupees (₹)
+const formatPrice = (priceInUSD: number): string => {
+  const priceInRupees = priceInUSD * 85; // Handcrafted conversion factor for luxury Indian jewelry pricing
+  return "₹" + priceInRupees.toLocaleString("en-IN");
+};
 
 export default function App() {
   const { user, profile, logout } = useAuth();
@@ -1007,7 +1012,7 @@ export default function App() {
                       {/* Price Action link */}
                       <div className="mt-5 pt-4 border-t border-[#D4AF37]/20 flex items-center justify-between">
                         <span className="font-serif font-light text-[#D4AF37] text-lg">
-                          ${product.price.toLocaleString()}
+                          {formatPrice(product.price)}
                         </span>
                         <button 
                           onClick={() => setSelectedProduct(product)}
@@ -1918,7 +1923,7 @@ export default function App() {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <span className="text-[10px] uppercase text-neutral-500 block">Estimated price value</span>
-                      <span className="font-serif font-bold text-2xl text-[#D4AF37]">${selectedProduct.price.toLocaleString()}</span>
+                      <span className="font-serif font-bold text-2xl text-[#D4AF37]">{formatPrice(selectedProduct.price)}</span>
                     </div>
                     {wishlist.some(item => item.id === selectedProduct.id) ? (
                       <span className="text-xs text-[#FAF9F6] bg-neutral-800 px-3 py-1 text-[10px] uppercase font-sans">Saved in Wishlist</span>
@@ -1939,7 +1944,7 @@ export default function App() {
                         setBookingFormData({
                           ...bookingFormData,
                           service: "Custom Jewelry Design",
-                          message: `I would like to consult with our showrooms about ordering the "${selectedProduct.name}" valued at $${selectedProduct.price.toLocaleString()}.`
+                          message: `I would like to consult with our showrooms about ordering the "${selectedProduct.name}" valued at ${formatPrice(selectedProduct.price)}.`
                         });
                         setSelectedProduct(null);
                         setIsBookingModalOpen(true);
@@ -1949,7 +1954,7 @@ export default function App() {
                       Instant Quote Consult
                     </button>
                     <a
-                      href={`https://wa.me/9122584942272?text=${encodeURIComponent(`Hi HAARA, I would like to inquire about purchasing: ${selectedProduct.name} ($${selectedProduct.price.toLocaleString()})`)}`}
+                      href={`https://wa.me/9122584942272?text=${encodeURIComponent(`Hi HAARA, I would like to inquire about purchasing: ${selectedProduct.name} (${formatPrice(selectedProduct.price)})`)}`}
                       target="_blank"
                       rel="noreferrer"
                       className="border border-[#D4AF37]/45 text-[#D4AF37] hover:bg-[#D4AF37]/5 text-center text-xs uppercase font-serif tracking-widest font-bold py-3 transition-all"
@@ -2176,7 +2181,7 @@ export default function App() {
                         />
                         <div className="flex-grow min-w-0">
                           <h4 className="font-serif text-sm font-semibold truncate text-[#FAF9F6]">{item.name}</h4>
-                          <span className="text-[10px] text-[#D4AF37] font-serif block">${item.price.toLocaleString()}</span>
+                          <span className="text-[10px] text-[#D4AF37] font-serif block">{formatPrice(item.price)}</span>
                           <span className="text-[9px] text-neutral-500 truncate block font-sans uppercase">{item.metal}</span>
                         </div>
                         <button 
@@ -2198,7 +2203,7 @@ export default function App() {
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-neutral-400">Accrued Wishlist Worth:</span>
                     <span className="font-serif text-[#D4AF37] font-semibold text-lg">
-                      ${wishlist.reduce((acc, curr) => acc + curr.price, 0).toLocaleString()}
+                      {formatPrice(wishlist.reduce((acc, curr) => acc + curr.price, 0))}
                     </span>
                   </div>
                   
